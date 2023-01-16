@@ -37,11 +37,11 @@ int main()
             int ans = shortsPath_cmd( graph, num1 , num2);
             if(ans == __INT_MAX__)
             {
-                printf("Dijsktra shortest path: -1\n");
+                printf("Dijsktra shortest path: -1 \n");
             }
             else
             {
-                printf("Dijsktra shortest path: %d\n",ans);
+                printf("Dijsktra shortest path: %d \n",ans);
             }
         }
 
@@ -50,11 +50,11 @@ int main()
             int ans = TSP_cmd(graph);
             if(ans == __INT_MAX__)
             {
-                printf("TSP shortest path: -1\n");
+                printf("TSP shortest path: -1 \n");
             }
             else
             {
-                printf("TSP shortest path: %d\n",ans);
+                printf("TSP shortest path: %d \n",ans);
             }
         }
 
