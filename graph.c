@@ -1,20 +1,57 @@
-#include "graph.h"
 #include <stdio.h>
 #include <stdlib.h>
+#include "header.h"
 
-
-pnode find_node(pnode tempgr, int num)
+char build_graph_cmd(pnode * head)
 {
-    while(tempgr!=NULL)
+    char ch = 0;
+    int size;
+    int node_src;
+    int weight;
+    int node_dest;
+    pnode src;
+    pnode dest;
+    pedge edge = NULL;
+
+    if((*head) != NULL)
     {
-        if(tempgr->node_num == num)
-        {
-            return tempgr;
-        }
-        tempgr=tempgr->next;
+        deleteGraph_cmd(head);
     }
-    return tempgr;
+
+    scanf("%d", &size);
+    (*head)= node_alloc(--size);
+
+    if((*head) == NULL)
+    {
+        return 'A';
+    }
+
+    while(size != 0)
+    {
+        pnode temp = node_alloc(--size);
+        temp->next = (*head);
+        (*head) = temp;
+    }
+
+    while(ch != '\n' && !feof(stdin) && ch != 'B' && ch != 'D' && ch != 'S' && ch != 'T' && ch != 'A')
+    {
+        scanf("%c", &ch);
+        if(ch == 'n')
+        {
+            scanf("%d", &node_src);
+            src = find_node((*head), node_src);
+            while((!feof(stdin)) && scanf("%d", &node_dest))
+            {
+                dest = find_node((*head), node_dest);
+                scanf("%d", &weight);
+                edge = edge_alloc(weight, dest, edge);
+                add_edge(edge, src);
+            }
+        }
+    }
+    return ch;
 }
+
 
 void insert_node_cmd(pnode *head)
 {
@@ -80,6 +117,7 @@ void delete_node_cmd(pnode *head)
     }
     free_node(startnode);
 }
+
 void printGraph_cmd(pnode head) //for self debug
 {
     
@@ -115,88 +153,53 @@ void deleteGraph_cmd(pnode* head)
     }
 }
 
-char build_graph_cmd(pnode * head)
+
+int shortsPath_cmd(pnode head,int num1,int num2)
 {
-    char ch = 0;
-    int size;
-    int node_src;
-    int weight;
-    int node_dest;
-    pnode src;
-    pnode dest;
-    pedge edge = NULL;
-
-    if((*head) != NULL)
+    
+    dijkstra_algo(head,num1);
+    pnode ans = find_node(head, num2);
+    if(ans == NULL)
     {
-        deleteGraph_cmd(head);
+        return __INT_MAX__;
     }
-
-    scanf("%d", &size);
-    (*head)= node_alloc(--size);
-
-    if((*head) == NULL)
+    else
     {
-        return 'A';
-    }
-
-    while(size != 0)
-    {
-        pnode temp = node_alloc(--size);
-        temp->next = (*head);
-        (*head) = temp;
-    }
-
-    while(ch != '\n' && !feof(stdin) && ch != 'B' && ch != 'D' && ch != 'S' && ch != 'T' && ch != 'A')
-    {
-        scanf("%c", &ch);
-        if(ch == 'n')
+        if(ans->weight == __INT_MAX__)
         {
-            scanf("%d", &node_src);
-            src = find_node((*head), node_src);
-            while((!feof(stdin)) && scanf("%d", &node_dest))
-            {
-                dest = find_node((*head), node_dest);
-                scanf("%d", &weight);
-                edge = edge_alloc(weight, dest, edge);
-                add_edge(edge, src);
-            }
+            return __INT_MAX__;
+        }
+        else
+        {
+            return ans->weight;
         }
     }
-    return ch;
 }
-void set_defult_value(pnode other)
+
+int TSP_cmd(pnode head)
 {
-    while(other!=NULL)
-    {  
-        other->prev = NULL;
-        other->info = 0;
-        other-> weight = __INT_MAX__;
-        other = other->next;
-    }
-}
-pnode min_not_visited(pnode other)
-{
-    pnode ans = NULL;
-    while(other!=NULL)
+    int num;
+    scanf("%d", &num);
+    int *arr = (int*)(malloc(sizeof(int)*num));
+    int min = __INT_MAX__;
+    int * pmin=&min;
+    for(int i =0 ; i<num; i++)
     {
-        if(other->info == 0)
-        {
-            if(other->weight!=__INT_MAX__)
-            {
-                if(ans == NULL)
-                {
-                    ans = other;
-                }
-                if(other->weight<ans->weight)
-                {
-                    ans = other;
-                }
-            }
-        }
-        other = other->next;
+        scanf("%d", &arr[i]);
     }
-    return ans;
+    for(int i=0;i<num;i++)
+    {
+        swap_place(arr,0,i);
+        TSP_helper_cmd(head,arr,num,0,pmin);
+        swap_place(arr,i,0);
+    }
+    free(arr);
+    return *pmin;
 }
+
+/*************************************************************
+         Dijkstra algorithm and helper function.
+**************************************************************/
 void dijkstra_algo(pnode other ,int num)
 {
     set_defult_value(other);
@@ -223,55 +226,60 @@ void dijkstra_algo(pnode other ,int num)
 
     }
 
+}
 
-}
-int shortsPath_cmd(pnode head,int num1,int num2)
+void set_defult_value(pnode other)
 {
-    
-    dijkstra_algo(head,num1);
-    pnode ans = find_node(head, num2);
-    if(ans == NULL)
+    while(other!=NULL)
     {
-        return __INT_MAX__;
+        other->prev = NULL;
+        other->info = 0;
+        other-> weight = __INT_MAX__;
+        other = other->next;
     }
-    else
+}
+
+pnode find_node(pnode tempgr, int num)
+{
+    while(tempgr!=NULL)
     {
-        if(ans->weight == __INT_MAX__)
+        if(tempgr->node_num == num)
         {
-            return __INT_MAX__;
+            return tempgr;
         }
-        else
+        tempgr=tempgr->next;
+    }
+    return tempgr;
+}
+
+pnode min_not_visited(pnode other)
+{
+    pnode ans = NULL;
+    while(other!=NULL)
+    {
+        if(other->info == 0)
         {
-            return ans->weight;
+            if(other->weight!=__INT_MAX__)
+            {
+                if(ans == NULL)
+                {
+                    ans = other;
+                }
+                if(other->weight<ans->weight)
+                {
+                    ans = other;
+                }
+            }
         }
+        other = other->next;
     }
+    return ans;
 }
-void swap_place(int *arr, int num1, int num2)
-{
-    int temp = arr[num1];
-    arr[num1]=arr[num2];
-    arr[num2]=temp;
-}
-int TSP_cmd(pnode head)
-{
-    int num;
-    scanf("%d", &num);
-    int *arr = (int*)(malloc(sizeof(int)*num));
-    int min = __INT_MAX__;
-    int * pmin=&min;
-    for(int i =0 ; i<num; i++)
-    {
-        scanf("%d", &arr[i]);
-    }
-    for(int i=0;i<num;i++)
-    {
-        swap_place(arr,0,i);
-        TSP_helper_cmd(head,arr,num,0,pmin);
-        swap_place(arr,i,0);
-    }
-    free(arr);
-    return *pmin;
-}
+
+/*************************************************************
+         TSP algorithm and helper function.
+**************************************************************/
+
 void TSP_helper_cmd(pnode head, int *arr,int num, int curr,int *pmin)
 {
     if(num==2)
@@ -298,3 +306,16 @@ void TSP_helper_cmd(pnode head, int *arr,int num, int curr,int *pmin)
         swap_place(arr,i,1);
     }
 }
+
+void swap_place(int *arr, int num1, int num2)
+{
+    int temp = arr[num1];
+    arr[num1]=arr[num2];
+    arr[num2]=temp;
+}
+
+
+
+
+
+

@@ -1,6 +1,6 @@
 #include <stdio.h>
-#include "graph.h"
 #include <stdlib.h>
+#include "header.h"
 
 pnode node_alloc(int num)
 {

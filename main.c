@@ -1,6 +1,6 @@
-#include "graph.h"
 #include <stdio.h>
 #include <stdlib.h>
+#include "header.h"
 
 
 int main()
@@ -15,8 +15,8 @@ int main()
         {
             deleteGraph_cmd(&graph);
             ch = build_graph_cmd(&graph);
-            //printGraph_cmd(graph);
-            //printf("\n");
+            printGraph_cmd(graph);
+            printf("\n");
         }
 
         if(ch == 'B')

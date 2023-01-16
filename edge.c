@@ -1,7 +1,6 @@
-#include "graph.h"
 #include <stdio.h>
 #include <stdlib.h>
-
+#include "header.h"
 
 pedge edge_alloc(int weight, pnode endpoint, pedge next)
 {
