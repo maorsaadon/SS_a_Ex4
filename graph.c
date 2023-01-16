@@ -20,6 +20,7 @@ char build_graph_cmd(pnode * head)
 
     scanf("%d", &size);
     (*head)= node_alloc(--size);
+    
 
     if((*head) == NULL)
     {
@@ -123,18 +124,15 @@ void printGraph_cmd(pnode head) //for self debug
     
     while(head!=NULL)
     {
-        printf("%d :", head->node_num);
+        printf("node number %d :\n", head->node_num);
         if(head->prev!=NULL)
         {
             printf("prev %d", head->prev->node_num);
         }
-        printf(" weigth %d", head->weight);
-        printf(" info %d\n", head->info);
         pedge pointE= head->edges;
         while(pointE!=NULL)
         {
-            printf("%d - ", pointE->endpoint->node_num);
-            printf("%d  ", pointE->weight);
+            printf("%d -> %d ; weight(%d, %d) = %d\n",head->node_num, pointE->endpoint->node_num,head->node_num, pointE->endpoint->node_num, pointE->weight);
             pointE = pointE->next;
         }
         printf("\n");
